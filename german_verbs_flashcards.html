@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>German Irregular Verbs – Flashcards</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f4f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: #1a1a1a;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .controls button {
+      padding: 8px 18px;
+      border: 0.5px solid #bbb;
+      border-radius: 8px;
+      background: white;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .controls button:hover {
+      background: #eee;
+    }
+
+    .controls button.active {
+      background: #1a1a1a;
+      color: white;
+      border-color: #1a1a1a;
+    }
+
+    .progress {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-area {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      min-height: 260px;
+      background: white;
+      border: 0.5px solid #ddd;
+      border-radius: 16px;
+      padding: 2rem;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      transition: box-shadow 0.15s;
+      user-select: none;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-hint {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-size: 0.75rem;
+      color: #bbb;
+    }
+
+    .card-number {
+      position: absolute;
+      top: 14px;
+      left: 18px;
+      font-size: 0.75rem;
+      color: #bbb;
+    }
+
+    .infinitiv {
+      font-size: 2rem;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-align: center;
+    }
+
+    .translation {
+      font-size: 1rem;
+      color: #888;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .forms {
+      width: 100%;
+      border-top: 0.5px solid #eee;
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .forms.visible {
+      display: block;
+    }
+
+    .forms table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .forms td {
+      padding: 5px 8px;
+      vertical-align: top;
+    }
+
+    .forms td:first-child {
+      color: #888;
+      width: 110px;
+      font-size: 0.8rem;
+      padding-top: 6px;
+    }
+
+    .forms td:last-child {
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.78rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin: 2px 3px 2px 0;
+      border: 0.5px solid;
+    }
+
+    .pill-hat {
+      background: #eaf3de;
+      color: #3b6d11;
+      border-color: #97c459;
+    }
+
+    .pill-ist {
+      background: #e6f1fb;
+      color: #185fa5;
+      border-color: #85b7eb;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav button {
+      padding: 10px 28px;
+      border: 0.5px solid #bbb;
+      border-radius: 10px;
+      background: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .nav button:hover {
+      background: #eee;
+    }
+
+    .nav button:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .nav button.reveal-btn {
+      background: #1a1a1a;
+      color: white;
+      border-color: #1a1a1a;
+    }
+
+    .nav button.reveal-btn:hover {
+      background: #333;
+    }
+
+    .all-grid {
+      display: none;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .all-grid.visible {
+      display: block;
+    }
+
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 0.5px solid #ddd;
+    }
+
+    .grid-table thead tr {
+      background: #f5f4f0;
+    }
+
+    .grid-table th {
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 0.8rem;
+      color: #666;
+      border-bottom: 0.5px solid #ddd;
+    }
+
+    .grid-table td {
+      padding: 9px 14px;
+      border-bottom: 0.5px solid #f0eeea;
+      vertical-align: top;
+    }
+
+    .grid-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .grid-table tr:hover td {
+      background: #fafaf8;
+    }
+
+    .grid-table .inf {
+      font-weight: 500;
+    }
+
+    .grid-table .en {
+      color: #888;
+      font-style: italic;
+      font-size: 0.83rem;
+    }
+
+    @media (max-width: 480px) {
+      .infinitiv {
+        font-size: 1.5rem;
+      }
+
+      .card {
+        padding: 1.5rem 1.2rem;
+        min-height: 220px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>German Irregular Verbs</h1>
+  <p class="subtitle">Tap a card to reveal the forms</p>
+
+  <div class="controls">
+    <button class="active" id="btn-flash" onclick="setMode('flash', this)">Flashcards</button>
+    <button id="btn-all" onclick="setMode('all', this)">All Verbs</button>
+    <button onclick="shuffle()">Shuffle</button>
+  </div>
+
+  <div id="flash-mode">
+    <div class="progress" id="progress"></div>
+    <div class="card-area">
+      <div class="card" id="card" onclick="reveal()">
+        <span class="card-number" id="card-number"></span>
+        <span class="card-hint" id="card-hint">tap to reveal</span>
+        <div class="infinitiv" id="inf"></div>
+        <div class="translation" id="trans"></div>
+        <div class="forms" id="forms"></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button id="prev-btn" onclick="prev()">← Prev</button>
+      <button class="reveal-btn" id="reveal-btn" onclick="reveal()">Reveal</button>
+      <button id="next-btn" onclick="next()">Next →</button>
+    </div>
+  </div>
+
+  <div class="all-grid" id="all-mode">
+    <table class="grid-table">
+      <thead>
+        <tr>
+          <th>Infinitiv</th>
+          <th>English</th>
+          <th>Präteritum</th>
+          <th>Partizip II</th>
+        </tr>
+      </thead>
+      <tbody id="all-tbody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    var verbs = [
+      { inf: "backen", en: "to bake", prat: "backte / buk", p2: "hat gebacken" },
+      { inf: "befehlen", en: "to command / order", prat: "befahl", p2: "hat befohlen" },
+      { inf: "befleißigen", en: "to apply oneself", prat: "befliss", p2: "hat gebissen" },
+      { inf: "beginnen", en: "to begin", prat: "begann", p2: "hat begonnen" },
+      { inf: "beißen", en: "to bite", prat: "biss", p2: "hat gebissen" },
+      { inf: "bergen", en: "to rescue / conceal", prat: "barg", p2: "hat geborgen" },
+      { inf: "bersten", en: "to burst", prat: "barst", p2: "ist geborsten" },
+      { inf: "betrügen", en: "to deceive / cheat", prat: "betrog", p2: "hat betrogen" },
+      { inf: "bewegen", en: "to cause / induce", prat: "bewog", p2: "hat bewogen" },
+      { inf: "biegen", en: "to bend", prat: "bog", p2: "hat gebogen" },
+      { inf: "bieten", en: "to offer", prat: "bot", p2: "hat geboten" },
+      { inf: "binden", en: "to bind / tie", prat: "band", p2: "hat gebunden" },
+      { inf: "bitten", en: "to ask / request", prat: "bat", p2: "hat gebeten" },
+      { inf: "blasen", en: "to blow", prat: "blies", p2: "hat geblasen" },
+      { inf: "bleiben", en: "to stay / remain", prat: "blieb", p2: "ist geblieben" },
+      { inf: "bleichen", en: "to bleach / fade", prat: "bleichte / blich", p2: "hat gebleicht / ist geblichen" },
+      { inf: "braten", en: "to fry / roast", prat: "briet", p2: "hat gebraten" },
+      { inf: "brechen", en: "to break", prat: "brach", p2: "hat/ist gebrochen" },
+      { inf: "brennen", en: "to burn", prat: "brannte", p2: "hat gebrannt" },
+      { inf: "bringen", en: "to bring", prat: "brachte", p2: "hat gebracht" },
+      { inf: "denken", en: "to think", prat: "dachte", p2: "hat gedacht" },
+      { inf: "dingen", en: "to hire / engage", prat: "dongen (dang)", p2: "hat gedungen (gedingt)" },
+      { inf: "dreschen", en: "to thresh", prat: "drosch", p2: "hat gedroschen" },
+      { inf: "dringen", en: "to penetrate / urge", prat: "drang", p2: "hat/ist gedrungen" },
+      { inf: "dürfen", en: "to be allowed to", prat: "durfte", p2: "hat gedurft" },
+      { inf: "empfehlen", en: "to recommend", prat: "empfahl", p2: "hat empfohlen" },
+      { inf: "erlöschen", en: "to go out / die out", prat: "erlosch", p2: "ist erloschen" },
+      { inf: "erschrecken", en: "to be frightened", prat: "erschrak", p2: "ist erschrocken" },
+      { inf: "erwägen", en: "to consider / weigh up", prat: "erwog", p2: "hat erwogen" },
+      { inf: "essen", en: "to eat", prat: "aß", p2: "hat gegessen" },
+      { inf: "fahren", en: "to drive / travel", prat: "fuhr", p2: "ist/hat gefahren" },
+      { inf: "fechten", en: "to fence / fight", prat: "focht", p2: "hat gefochten" },
+      { inf: "finden", en: "to find", prat: "fand", p2: "hat gefunden" },
+      { inf: "flechten", en: "to braid / weave", prat: "flocht", p2: "hat geflochten" },
+      { inf: "fliegen", en: "to fly", prat: "flog", p2: "hat/ist geflogen" },
+      { inf: "fliehen", en: "to flee", prat: "floh", p2: "ist geflohen" }
+    ];
+
+    var order = [];
+    for (var i = 0; i < verbs.length; i++) {
+      order.push(i);
+    }
+    var current = 0;
+    var revealed = false;
+    var mode = 'flash';
+
+    function formatP2(p2) {
+      return p2.split('/').map(function (s) {
+        s = s.trim();
+        var cls = s.indexOf('ist') === 0 ? 'pill-ist' : 'pill-hat';
+        return '<span class="pill ' + cls + '">' + s + '</span>';
+      }).join('');
+    }
+
+    function renderCard() {
+      var v = verbs[order[current]];
+      revealed = false;
+      document.getElementById('card-hint').textContent = 'tap to reveal';
+      document.getElementById('reveal-btn').textContent = 'Reveal';
+      document.getElementById('inf').textContent = v.inf;
+      document.getElementById('trans').textContent = v.en;
+      document.getElementById('card-number').textContent = (current + 1) + ' / ' + verbs.length;
+      document.getElementById('progress').textContent = (current + 1) + ' of ' + verbs.length;
+      var forms = document.getElementById('forms');
+      forms.innerHTML = '<table>' +
+        '<tr><td>Präteritum</td><td>' + v.prat + '</td></tr>' +
+        '<tr><td>Partizip II</td><td>' + formatP2(v.p2) + '</td></tr>' +
+        '</table>';
+      forms.classList.remove('visible');
+      document.getElementById('prev-btn').disabled = current === 0;
+      document.getElementById('next-btn').disabled = current === verbs.length - 1;
+    }
+
+    function reveal() {
+      if (!revealed) {
+        revealed = true;
+        document.getElementById('forms').classList.add('visible');
+        document.getElementById('card-hint').textContent = '';
+        document.getElementById('reveal-btn').textContent = 'Next →';
+      } else {
+        next();
+      }
+    }
+
+    function next() {
+      if (current < verbs.length - 1) { current++; renderCard(); }
+    }
+    function prev() {
+      if (current > 0) { current--; renderCard(); }
+    }
+
+    function shuffle() {
+      for (var i = order.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = order[i];
+        order[i] = order[j];
+        order[j] = temp;
+      }
+      current = 0;
+      renderCard();
+    }
+
+    function setMode(m, btn) {
+      mode = m;
+      var buttons = document.querySelectorAll('.controls button');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove('active');
+      }
+      if (btn) {
+        btn.classList.add('active');
+      } else {
+        if (m === 'flash') document.getElementById('btn-flash').classList.add('active');
+        if (m === 'all') document.getElementById('btn-all').classList.add('active');
+      }
+      document.getElementById('flash-mode').style.display = m === 'flash' ? '' : 'none';
+      var allMode = document.getElementById('all-mode');
+      if (m === 'all') {
+        allMode.classList.add('visible');
+        renderAllTable();
+      } else {
+        allMode.classList.remove('visible');
+      }
+    }
+
+    function renderAllTable() {
+      var tbody = document.getElementById('all-tbody');
+      var html = '';
+      for (var i = 0; i < verbs.length; i++) {
+        var v = verbs[i];
+        html += '<tr>' +
+          '<td class="inf">' + v.inf + '</td>' +
+          '<td class="en">' + v.en + '</td>' +
+          '<td>' + v.prat + '</td>' +
+          '<td>' + formatP2(v.p2) + '</td>' +
+          '</tr>';
+      }
+      tbody.innerHTML = html;
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (mode !== 'flash') return;
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); revealed ? next() : reveal(); }
+      if (e.key === 'ArrowLeft') prev();
+    });
+
+    renderCard();
+  </script>
+</body>
+
+</html>
