@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verbs with Prepositions - Flashcards</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f4f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 2rem;
+      margin-top: 1rem;
+    }
+
+    .top-nav a {
+      text-decoration: none;
+      color: #888;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+
+    .top-nav a.active {
+      background: #1a1a1a;
+      color: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .top-nav a:not(.active):hover {
+      background: #e2e2e2;
+      color: #1a1a1a;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: #1a1a1a;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .controls button {
+      padding: 8px 18px;
+      border: 0.5px solid #bbb;
+      border-radius: 8px;
+      background: white;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .controls button:hover {
+      background: #eee;
+    }
+
+    .controls button.active {
+      background: #1a1a1a;
+      color: white;
+      border-color: #1a1a1a;
+    }
+
+    .progress {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-area {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      min-height: 260px;
+      background: white;
+      border: 0.5px solid #ddd;
+      border-radius: 16px;
+      padding: 2rem;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      transition: box-shadow 0.15s;
+      user-select: none;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-hint {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-size: 0.75rem;
+      color: #bbb;
+    }
+
+    .card-number {
+      position: absolute;
+      top: 14px;
+      left: 18px;
+      font-size: 0.75rem;
+      color: #bbb;
+    }
+
+    .infinitiv {
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: #1a1a1a;
+      text-align: center;
+      margin-bottom: 0px;
+      padding: 0 10px;
+      line-height: 1.2;
+    }
+
+    .translation {
+      font-size: 1rem;
+      color: #888;
+      font-style: italic;
+      text-align: center;
+      margin-bottom: 0;
+    }
+
+    .forms {
+      width: 100%;
+      border-top: 0.5px solid #eee;
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .forms.visible {
+      display: block;
+    }
+
+    .forms table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .forms td {
+      padding: 5px 8px;
+      vertical-align: top;
+    }
+
+    .forms td:first-child {
+      color: #888;
+      width: 90px;
+      font-size: 0.8rem;
+      padding-top: 6px;
+    }
+
+    .forms td:last-child {
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.85rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin: 2px 3px 2px 0;
+      border: 0.5px solid;
+    }
+
+    .pill-akk {
+      background: #fff0f0;
+      color: #cc2929;
+      border-color: #ffcccc;
+      font-weight: 500;
+    }
+
+    .pill-dat {
+      background: #e6f1fb;
+      color: #185fa5;
+      border-color: #85b7eb;
+      font-weight: 500;
+    }
+
+    .pill-da {
+      background: #fdf5e6;
+      color: #b8860b;
+      border-color: #f5deb3;
+      font-weight: 500;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav button {
+      padding: 10px 28px;
+      border: 0.5px solid #bbb;
+      border-radius: 10px;
+      background: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .nav button:hover {
+      background: #eee;
+    }
+
+    .nav button:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .nav button.reveal-btn {
+      background: #1a1a1a;
+      color: white;
+      border-color: #1a1a1a;
+    }
+
+    .nav button.reveal-btn:hover {
+      background: #333;
+    }
+
+    .all-grid {
+      display: none;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .all-grid.visible {
+      display: block;
+    }
+
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 0.5px solid #ddd;
+    }
+
+    .grid-table thead tr {
+      background: #f5f4f0;
+    }
+
+    .grid-table th {
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 0.8rem;
+      color: #666;
+      border-bottom: 0.5px solid #ddd;
+    }
+
+    .grid-table td {
+      padding: 9px 14px;
+      border-bottom: 0.5px solid #f0eeea;
+      vertical-align: middle;
+    }
+
+    .grid-table tr:hover td {
+      background: #fafaf8;
+    }
+
+    .grid-table .inf {
+      font-weight: 500;
+    }
+
+    .grid-table .en {
+      color: #888;
+      font-style: italic;
+      font-size: 0.83rem;
+    }
+
+    .rules-container {
+      display: none;
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      border: 0.5px solid #ddd;
+      margin-bottom: 3rem;
+    }
+
+    .rules-container.visible {
+      display: block;
+    }
+
+    .rules-container h3 {
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      color: #333;
+    }
+
+    .rules-container h3:first-child {
+      margin-top: 0;
+    }
+
+    .rules-container ul {
+      margin-left: 1.5rem;
+      margin-bottom: 1.2rem;
+      margin-top: 0.5rem;
+      color: #555;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .rule-box {
+      background: #fafaf8;
+      border-left: 4px solid #85b7eb;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      border-radius: 4px;
+    }
+
+    .rule-box h4 {
+      margin-bottom: 0.5rem;
+      color: #1a1a1a;
+      font-size: 1rem;
+    }
+
+    .rule-box p {
+      margin-bottom: 0.8rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .summary-box {
+      background: #eaf3de;
+      border-left: 4px solid #97c459;
+      padding: 1rem;
+      margin-top: 1.5rem;
+      border-radius: 4px;
+    }
+
+    .summary-box h4 {
+      margin-bottom: 0.5rem;
+      color: #3b6d11;
+      font-size: 1rem;
+    }
+
+    .summary-box p {
+      line-height: 1.8;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #333;
+    }
+
+    @media (max-width: 480px) {
+      .infinitiv {
+        font-size: 1.5rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+        min-height: 220px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-nav">
+    <a href="german_verbs_flashcards.html">Irregular Verbs</a>
+    <a href="german_verbs_prepositions.html" class="active">Verbs + Prep.</a>
+  </div>
+  <h1>Verbs with Prepositions</h1>
+  <p class="subtitle">Tap a card to reveal the Case, "da-Form", and Example</p>
+
+  <div class="controls">
+    <button class="active" id="btn-flash" onclick="setMode('flash', this)">Flashcards</button>
+    <button id="btn-all" onclick="setMode('all', this)">All Verbs</button>
+    <button id="btn-rules" onclick="setMode('rules', this)">Rules</button>
+    <button id="btn-shuffle" onclick="shuffle()">Shuffle</button>
+  </div>
+
+  <div id="flash-mode">
+    <div class="progress" id="progress"></div>
+    <div class="card-area">
+      <div class="card" id="card" onclick="reveal()">
+        <span class="card-number" id="card-number"></span>
+        <span class="card-hint" id="card-hint">tap to reveal</span>
+        <div class="infinitiv" id="inf"></div>
+        <div class="translation" id="trans"></div>
+        <div class="forms" id="forms"></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button id="prev-btn" onclick="prev()">← Prev</button>
+      <button class="reveal-btn" id="reveal-btn" onclick="reveal()">Reveal</button>
+      <button id="next-btn" onclick="next()">Next →</button>
+    </div>
+  </div>
+
+  <div class="all-grid" id="all-mode">
+    <table class="grid-table">
+      <thead>
+        <tr>
+          <th>Verb</th>
+          <th>English</th>
+          <th>Case</th>
+          <th>+Thing</th>
+          <th>Example</th>
+        </tr>
+      </thead>
+      <tbody id="all-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="rules-container" id="rules-mode">
+    <h3>✅ Akkusativ (always used with these prepositions)</h3>
+    <ul>
+      <li>durch, für, gegen, ohne, um</li>
+    </ul>
+    <h3>✅ Dativ (always used with these prepositions)</h3>
+    <ul>
+      <li>aus, bei, mit, nach, seit, von, zu</li>
+    </ul>
+    <h3>⚠️ Both (Akkusativ OR Dativ depending on movement)</h3>
+    <ul>
+      <li>an, auf, in, über, unter, vor, hinter, neben, zwischen</li>
+    </ul>
+
+    <div class="rule-box">
+      <h4>👉 Use Akkusativ → when there is movement (direction)</h4>
+      <p>Question: Wohin? (where to?)</p>
+      <ul>
+        <li>an → Ich gehe an den Tisch</li>
+        <li>auf → Ich lege das Buch auf den Tisch</li>
+        <li>in → Ich gehe in das Haus</li>
+        <li>über → Ich gehe über die Straße</li>
+        <li>unter → Die Katze läuft unter den Tisch</li>
+        <li>vor → Ich stelle mich vor das Haus</li>
+        <li>hinter → Er geht hinter das Auto</li>
+        <li>neben → Ich setze mich neben dich</li>
+        <li>zwischen → Ich stelle mich zwischen die Leute</li>
+      </ul>
+    </div>
+
+    <div class="rule-box">
+      <h4>👉 Use Dativ → when there is position (no movement)</h4>
+      <p>Question: Wo? (where?)</p>
+      <ul>
+        <li>an → Ich bin an dem Tisch</li>
+        <li>auf → Das Buch liegt auf dem Tisch</li>
+        <li>in → Ich bin im Haus</li>
+        <li>über → Die Lampe hängt über dem Tisch</li>
+        <li>unter → Die Katze ist unter dem Tisch</li>
+        <li>vor → Ich stehe vor dem Haus</li>
+        <li>hinter → Das Auto steht hinter dem Haus</li>
+        <li>neben → Ich sitze neben dir</li>
+        <li>zwischen → Ich stehe zwischen den Leuten</li>
+      </ul>
+    </div>
+
+    <div class="summary-box">
+      <h4>🧠 One-line rule</h4>
+      <p>👉 Movement → Akkusativ (Wohin?)<br>👉 Position → Dativ (Wo?)</p>
+    </div>
+  </div>
+
+  <script>
+    var verbs = [
+      { inf: "abhängen (von)", "case": "D", da: "davon", en: "to depend on", ex: "Es hängt vom Wetter ab.<br><span style='color:#888;font-size:0.85rem'>It depends on the weather.</span>" },
+      { inf: "achten (auf)", "case": "A", da: "darauf", en: "to pay attention to", ex: "Achte auf den Verkehr!<br><span style='color:#888;font-size:0.85rem'>Pay attention to the traffic!</span>" },
+      { inf: "anfangen (mit)", "case": "D", da: "damit", en: "to begin with", ex: "Wir fangen mit dem Kurs an.<br><span style='color:#888;font-size:0.85rem'>We are beginning with the course.</span>" },
+      { inf: "sich anpassen (an)", "case": "A", da: "daran", en: "to adapt to", ex: "Er passt sich an die neue Situation an.<br><span style='color:#888;font-size:0.85rem'>He adapts to the new situation.</span>" },
+      { inf: "sich ärgern (über)", "case": "A", da: "darüber", en: "to be annoyed about", ex: "Ich ärgere mich über den Fehler.<br><span style='color:#888;font-size:0.85rem'>I am annoyed about the mistake.</span>" },
+      { inf: "jdn. ärgern (mit)", "case": "D", da: "damit", en: "to annoy someone with", ex: "Hör auf, mich mit deinen Fragen zu ärgern!<br><span style='color:#888;font-size:0.85rem'>Stop annoying me with your questions!</span>" },
+      { inf: "aufhören (mit)", "case": "D", da: "damit", en: "to stop (doing something)", ex: "Hör mit dem Lärm auf!<br><span style='color:#888;font-size:0.85rem'>Stop the noise!</span>" },
+      { inf: "sich / jdn. befreien (von)", "case": "D", da: "davon", en: "to free from", ex: "Er hat sich von seinen Schulden befreit.<br><span style='color:#888;font-size:0.85rem'>He freed himself from his debts.</span>" },
+      { inf: "befreien (aus)", "case": "D", da: "daraus", en: "to free from", ex: "Sie befreite den Vogel aus dem Käfig.<br><span style='color:#888;font-size:0.85rem'>She freed the bird from the cage.</span>" },
+      { inf: "beginnen (mit)", "case": "D", da: "damit", en: "to begin", ex: "Der Unterricht beginnt mit einem Test.<br><span style='color:#888;font-size:0.85rem'>The class begins with a test.</span>" },
+      { inf: "sich beklagen (bei)", "case": "D", da: "dabei", en: "to complain to", ex: "Er beklagt sich bei seinem Chef.<br><span style='color:#888;font-size:0.85rem'>He complains to his boss.</span>" },
+      { inf: "sich beklagen (über)", "case": "A", da: "darüber", en: "to complain about", ex: "Sie beklagt sich über das schlechte Wetter.<br><span style='color:#888;font-size:0.85rem'>She complains about the bad weather.</span>" },
+      { inf: "sich bemühen (um)", "case": "A", da: "darum", en: "to make an effort for", ex: "Ich bemühe mich um einen neuen Job.<br><span style='color:#888;font-size:0.85rem'>I'm making an effort for a new job.</span>" },
+      { inf: "sich beschäftigen (mit)", "case": "D", da: "damit", en: "to deal with", ex: "Sie beschäftigt sich mit Kunst.<br><span style='color:#888;font-size:0.85rem'>She deals with art.</span>" },
+      { inf: "sich beschweren (bei)", "case": "D", da: "dabei", en: "to complain to", ex: "Wir beschweren uns beim Manager.<br><span style='color:#888;font-size:0.85rem'>We complain to the manager.</span>" },
+      { inf: "sich beschweren (über)", "case": "A", da: "darüber", en: "to complain about", ex: "Er beschwert sich über das kalte Essen.<br><span style='color:#888;font-size:0.85rem'>He complains about the cold food.</span>" },
+      { inf: "sich bewerben (um)", "case": "A", da: "darum", en: "to apply for", ex: "Ich bewerbe mich um die Stelle.<br><span style='color:#888;font-size:0.85rem'>I am applying for the position.</span>" },
+      { inf: "jdn. bitten (um)", "case": "A", da: "darum", en: "to ask for", ex: "Darf ich dich um einen Gefallen bitten?<br><span style='color:#888;font-size:0.85rem'>May I ask you for a favor?</span>" },
+      { inf: "bürgen (für)", "case": "A", da: "dafür", en: "to guarantee for", ex: "Ich bürge für ihn.<br><span style='color:#888;font-size:0.85rem'>I guarantee for him.</span>" },
+      { inf: "jdm. danken (für)", "case": "A", da: "dafür", en: "to thank for", ex: "Ich danke dir für deine Hilfe.<br><span style='color:#888;font-size:0.85rem'>I thank you for your help.</span>" },
+      { inf: "denken (an)", "case": "A", da: "daran", en: "to think of", ex: "Ich denke oft an dich.<br><span style='color:#888;font-size:0.85rem'>I often think of you.</span>" },
+      { inf: "sich entschuldigen (bei)", "case": "D", da: "dabei", en: "to apologize to", ex: "Er entschuldigt sich bei der Lehrerin.<br><span style='color:#888;font-size:0.85rem'>He apologizes to the teacher.</span>" },
+      { inf: "sich entschuldigen (für)", "case": "A", da: "dafür", en: "to apologize for", ex: "Ich entschuldige mich für die Verspätung.<br><span style='color:#888;font-size:0.85rem'>I apologize for the delay.</span>" },
+      { inf: "sich erinnern (an)", "case": "A", da: "daran", en: "to remember", ex: "Ich erinnere mich an unseren Urlaub.<br><span style='color:#888;font-size:0.85rem'>I remember our vacation.</span>" },
+      { inf: "jdn. erkennen (an)", "case": "D", da: "daran", en: "to recognize by", ex: "Ich erkenne ihn an seiner Stimme.<br><span style='color:#888;font-size:0.85rem'>I recognize him by his voice.</span>" },
+      { inf: "sich erkundigen (bei)", "case": "D", da: "dabei", en: "to inquire from", ex: "Ich erkundige mich beim Arzt.<br><span style='color:#888;font-size:0.85rem'>I inquire from the doctor.</span>" },
+      { inf: "sich erkundigen (nach)", "case": "D", da: "danach", en: "to ask about", ex: "Sie erkundigt sich nach dem Weg.<br><span style='color:#888;font-size:0.85rem'>She asks about the way.</span>" },
+      { inf: "jdn. fragen (nach)", "case": "D", da: "danach", en: "to ask about", ex: "Er fragt nach dem Bahnhof.<br><span style='color:#888;font-size:0.85rem'>He asks about the train station.</span>" },
+      { inf: "sich freuen (auf)", "case": "A", da: "darauf", en: "to look forward to", ex: "Wir freuen uns auf das Wochenende.<br><span style='color:#888;font-size:0.85rem'>We look forward to the weekend.</span>" },
+      { inf: "sich freuen (über)", "case": "A", da: "darüber", en: "to be happy about", ex: "Ich freue mich über das Geschenk.<br><span style='color:#888;font-size:0.85rem'>I am happy about the gift.</span>" },
+      { inf: "sich fürchten (vor)", "case": "D", da: "davor", en: "to be afraid of", ex: "Das Kind fürchtet sich vor dem Hund.<br><span style='color:#888;font-size:0.85rem'>The child is afraid of the dog.</span>" },
+      { inf: "jdm. garantieren (für)", "case": "A", da: "dafür", en: "to guarantee", ex: "Ich garantiere für die Qualität.<br><span style='color:#888;font-size:0.85rem'>I guarantee the quality.</span>" },
+      { inf: "gehören (zu)", "case": "D", da: "dazu", en: "to belong to", ex: "Er gehört zu unserer Gruppe.<br><span style='color:#888;font-size:0.85rem'>He belongs to our group.</span>" },
+      { inf: "geraten (in)", "case": "A", da: "darin", en: "to get into", ex: "Er ist in Schwierigkeiten geraten.<br><span style='color:#888;font-size:0.85rem'>He got into trouble.</span>" },
+      { inf: "sich gewöhnen (an)", "case": "A", da: "daran", en: "to get used to", ex: "Ich muss mich an das Klima gewöhnen.<br><span style='color:#888;font-size:0.85rem'>I have to get used to the climate.</span>" },
+      { inf: "glauben (an)", "case": "A", da: "daran", en: "to believe in", ex: "Glaubst du an Gott?<br><span style='color:#888;font-size:0.85rem'>Do you believe in God?</span>" },
+      { inf: "jdn. halten (für)", "case": "A", da: "dafür", en: "to consider", ex: "Ich halte ihn für einen guten Freund.<br><span style='color:#888;font-size:0.85rem'>I consider him a good friend.</span>" },
+      { inf: "etwas halten (von)", "case": "D", da: "davon", en: "to think of", ex: "Was hältst du von diesem Plan?<br><span style='color:#888;font-size:0.85rem'>What do you think of this plan?</span>" },
+      { inf: "es handelt sich (um)", "case": "A", da: "darum", en: "to be about", ex: "Es handelt sich um ein wichtiges Thema.<br><span style='color:#888;font-size:0.85rem'>It is about an important topic.</span>" },
+      { inf: "herrschen (über)", "case": "A", da: "darüber", en: "to rule over", ex: "Der König herrscht über das Land.<br><span style='color:#888;font-size:0.85rem'>The king rules over the land.</span>" },
+      { inf: "hoffen (auf)", "case": "A", da: "darauf", en: "to hope for", ex: "Wir hoffen auf besseres Wetter.<br><span style='color:#888;font-size:0.85rem'>We hope for better weather.</span>" },
+      { inf: "sich interessieren (für)", "case": "A", da: "dafür", en: "to be interested in", ex: "Sie interessiert sich für Kunst.<br><span style='color:#888;font-size:0.85rem'>She is interested in art.</span>" },
+      { inf: "sich irren (in)", "case": "D", da: "darin", en: "to be mistaken about", ex: "Du irrst dich in diesem Punkt.<br><span style='color:#888;font-size:0.85rem'>You are mistaken on this point.</span>" },
+      { inf: "kämpfen (mit)", "case": "D", da: "damit", en: "to fight with", ex: "Er kämpft mit den Tränen.<br><span style='color:#888;font-size:0.85rem'>He is fighting back tears.</span>" },
+      { inf: "kämpfen (gegen)", "case": "A", da: "dagegen", en: "to fight against", ex: "Wir kämpfen gegen die Krankheit.<br><span style='color:#888;font-size:0.85rem'>We fight against the disease.</span>" },
+      { inf: "kämpfen (für)", "case": "A", da: "dafür", en: "to fight for", ex: "Sie kämpft für Gerechtigkeit.<br><span style='color:#888;font-size:0.85rem'>She fights for justice.</span>" },
+      { inf: "kämpfen (um)", "case": "A", da: "darum", en: "to fight for", ex: "Die Spieler kämpfen um den Ball.<br><span style='color:#888;font-size:0.85rem'>The players fight for the ball.</span>" },
+      { inf: "es kommt an (auf)", "case": "A", da: "darauf", en: "to depend on", ex: "Es kommt auf das Wetter an.<br><span style='color:#888;font-size:0.85rem'>It depends on the weather.</span>" },
+      { inf: "es kommt jdm. an (auf)", "case": "A", da: "darauf", en: "to matter to someone", ex: "Es kommt mir auf die Details an.<br><span style='color:#888;font-size:0.85rem'>The details matter to me.</span>" },
+      { inf: "sich konzentrieren (auf)", "case": "A", da: "darauf", en: "to concentrate on", ex: "Ich muss mich auf die Arbeit konzentrieren.<br><span style='color:#888;font-size:0.85rem'>I have to concentrate on work.</span>" },
+      { inf: "sich kümmern (um)", "case": "A", da: "darum", en: "to take care of", ex: "Er kümmert sich um die Kinder.<br><span style='color:#888;font-size:0.85rem'>He takes care of the children.</span>" },
+      { inf: "lachen (über)", "case": "A", da: "darüber", en: "to laugh about", ex: "Wir lachen über den Witz.<br><span style='color:#888;font-size:0.85rem'>We laugh about the joke.</span>" },
+      { inf: "leiden (an)", "case": "D", da: "daran", en: "to suffer from (health)", ex: "Er leidet an einer schweren Krankheit.<br><span style='color:#888;font-size:0.85rem'>He suffers from a severe illness.</span>" },
+      { inf: "leiden (unter)", "case": "D", da: "darunter", en: "to suffer from", ex: "Wir leiden unter dem Lärm.<br><span style='color:#888;font-size:0.85rem'>We suffer from the noise.</span>" },
+      { inf: "jdm. liegt (an)", "case": "D", da: "daran", en: "to care about", ex: "Mir liegt viel an unserer Freundschaft.<br><span style='color:#888;font-size:0.85rem'>I care a lot about our friendship.</span>" },
+      { inf: "es liegt (an)", "case": "D", da: "daran", en: "to be due to", ex: "Es liegt an seiner Faulheit.<br><span style='color:#888;font-size:0.85rem'>It is due to his laziness.</span>" },
+      { inf: "nachdenken (über)", "case": "A", da: "darüber", en: "to think about", ex: "Ich muss über das Angebot nachdenken.<br><span style='color:#888;font-size:0.85rem'>I have to think about the offer.</span>" },
+      { inf: "sich rächen (an)", "case": "D", da: "daran", en: "to take revenge on", ex: "Er rächte sich an seinem Feind.<br><span style='color:#888;font-size:0.85rem'>He took revenge on his enemy.</span>" },
+      { inf: "sich rächen (für)", "case": "A", da: "dafür", en: "to avenge", ex: "Sie rächte sich für die Beleidigung.<br><span style='color:#888;font-size:0.85rem'>She avenged the insult.</span>" },
+      { inf: "jdm. raten (zu)", "case": "D", da: "dazu", en: "to advise", ex: "Ich rate dir zu diesem Schritt.<br><span style='color:#888;font-size:0.85rem'>I advise you to take this step.</span>" },
+      { inf: "rechnen (auf)", "case": "A", da: "darauf", en: "to count on", ex: "Du kannst auf mich rechnen.<br><span style='color:#888;font-size:0.85rem'>You can count on me.</span>" },
+      { inf: "rechnen (mit)", "case": "D", da: "damit", en: "to expect", ex: "Wir rechnen mit schlechtem Wetter.<br><span style='color:#888;font-size:0.85rem'>We expect bad weather.</span>" },
+      { inf: "schreiben (an)", "case": "A", da: "daran", en: "to write to", ex: "Ich schreibe einen Brief an meine Mutter.<br><span style='color:#888;font-size:0.85rem'>I write a letter to my mother.</span>" },
+      { inf: "schreiben (über)", "case": "A", da: "darüber", en: "to write about", ex: "Der Journalist schreibt über den Vorfall.<br><span style='color:#888;font-size:0.85rem'>The journalist writes about the incident.</span>" },
+      { inf: "sich schützen (vor)", "case": "D", da: "davor", en: "to protect from", ex: "Die Brille schützt vor der Sonne.<br><span style='color:#888;font-size:0.85rem'>The glasses protect from the sun.</span>" },
+      { inf: "sich sehnen (nach)", "case": "D", da: "danach", en: "to long for", ex: "Ich sehne mich nach Ruhe.<br><span style='color:#888;font-size:0.85rem'>I long for peace.</span>" },
+      { inf: "sorgen (für)", "case": "A", da: "dafür", en: "to take care of", ex: "Sie sorgt für die Bezahlung.<br><span style='color:#888;font-size:0.85rem'>She takes care of the payment.</span>" },
+      { inf: "sich sorgen (um)", "case": "A", da: "darum", en: "to worry about", ex: "Ich sorge mich um seine Gesundheit.<br><span style='color:#888;font-size:0.85rem'>I worry about his health.</span>" },
+      { inf: "sprechen (mit)", "case": "D", da: "damit", en: "to speak with", ex: "Ich spreche mit dem Direktor.<br><span style='color:#888;font-size:0.85rem'>I speak with the director.</span>" },
+      { inf: "sprechen (über)", "case": "A", da: "darüber", en: "to talk about", ex: "Wir sprechen über das Problem.<br><span style='color:#888;font-size:0.85rem'>We talk about the problem.</span>" },
+      { inf: "sprechen (von)", "case": "D", da: "davon", en: "to speak of", ex: "Er spricht von seinen Erfahrungen.<br><span style='color:#888;font-size:0.85rem'>He speaks of his experiences.</span>" }
+    ];
+
+    var order = [];
+    for (var i = 0; i < verbs.length; i++) {
+      order.push(i);
+    }
+    var current = 0;
+    var revealed = false;
+    var mode = 'flash';
+
+    function renderCard() {
+      var v = verbs[order[current]];
+      revealed = false;
+      document.getElementById('card-hint').textContent = 'tap to reveal';
+      document.getElementById('reveal-btn').textContent = 'Reveal';
+      document.getElementById('inf').textContent = v.inf;
+      document.getElementById('trans').textContent = v.en;
+      document.getElementById('card-number').textContent = (current + 1) + ' / ' + verbs.length;
+      document.getElementById('progress').textContent = (current + 1) + ' of ' + verbs.length;
+      var forms = document.getElementById('forms');
+
+      var caseString = v.case === 'A' ? 'Akkusativ' : 'Dativ';
+      var caseClass = v.case === 'A' ? 'pill-akk' : 'pill-dat';
+      var casePill = '<span class="pill ' + caseClass + '">' + caseString + '</span>';
+      var daPill = '<span class="pill pill-da">' + v.da + '</span>';
+
+      forms.innerHTML = '<table>' +
+        '<tr><td>Case</td><td>' + casePill + '</td></tr>' +
+        '<tr><td>+ Something</td><td>' + daPill + '</td></tr>' +
+        '<tr><td>Example</td><td style="font-style:italic; line-height:1.4;">' + v.ex + '</td></tr>' +
+        '</table>';
+      forms.classList.remove('visible');
+      document.getElementById('prev-btn').disabled = current === 0;
+      document.getElementById('next-btn').disabled = current === verbs.length - 1;
+    }
+
+    function reveal() {
+      if (!revealed) {
+        revealed = true;
+        document.getElementById('forms').classList.add('visible');
+        document.getElementById('card-hint').textContent = '';
+        document.getElementById('reveal-btn').textContent = 'Next →';
+      } else {
+        next();
+      }
+    }
+
+    function next() {
+      if (current < verbs.length - 1) { current++; renderCard(); }
+    }
+    function prev() {
+      if (current > 0) { current--; renderCard(); }
+    }
+
+    function shuffle() {
+      for (var i = order.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = order[i];
+        order[i] = order[j];
+        order[j] = temp;
+      }
+      current = 0;
+      renderCard();
+    }
+
+    function setMode(m, btn) {
+      mode = m;
+      var buttons = document.querySelectorAll('.controls button');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove('active');
+        if (buttons[i].id === 'btn-shuffle') {
+          buttons[i].style.display = (m === 'flash') ? 'inline-block' : 'none';
+        }
+      }
+      if (btn) {
+        btn.classList.add('active');
+      } else {
+        if (m === 'flash') document.getElementById('btn-flash').classList.add('active');
+        if (m === 'all') document.getElementById('btn-all').classList.add('active');
+        if (m === 'rules') document.getElementById('btn-rules').classList.add('active');
+      }
+
+      document.getElementById('flash-mode').style.display = m === 'flash' ? '' : 'none';
+      var allMode = document.getElementById('all-mode');
+      var rulesMode = document.getElementById('rules-mode');
+
+      if (m === 'all') {
+        allMode.classList.add('visible');
+        renderAllTable();
+      } else {
+        allMode.classList.remove('visible');
+      }
+
+      if (m === 'rules') {
+        rulesMode.classList.add('visible');
+      } else {
+        rulesMode.classList.remove('visible');
+      }
+    }
+
+    function renderAllTable() {
+      var tbody = document.getElementById('all-tbody');
+      var html = '';
+      for (var i = 0; i < verbs.length; i++) {
+        var v = verbs[i];
+        var caseString = v.case === 'A' ? 'Akkusativ' : 'Dativ';
+        var caseClass = v.case === 'A' ? 'pill-akk' : 'pill-dat';
+        var casePill = '<span class="pill ' + caseClass + '">' + caseString + '</span>';
+        var daPill = '<span class="pill pill-da">' + v.da + '</span>';
+
+        html += '<tr>' +
+          '<td class="inf">' + v.inf + '</td>' +
+          '<td class="en">' + v.en + '</td>' +
+          '<td>' + casePill + '</td>' +
+          '<td>' + daPill + '</td>' +
+          '<td style="font-style:italic">' + v.ex + '</td>' +
+          '</tr>';
+      }
+      tbody.innerHTML = html;
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (mode !== 'flash') return;
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); revealed ? next() : reveal(); }
+      if (e.key === 'ArrowLeft') prev();
+    });
+
+    renderCard();
+  </script>
+</body>
+
+</html>
