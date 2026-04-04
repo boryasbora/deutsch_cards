@@ -307,6 +307,54 @@
       color: #1a1a1a;
     }
 
+    /* Toggle switch */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border: 0.5px solid #bbb;
+      border-radius: 8px;
+      background: white;
+      font-size: 0.85rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .toggle-wrap:hover {
+      background: #eee;
+    }
+
+    .toggle-track {
+      width: 36px;
+      height: 20px;
+      border-radius: 10px;
+      background: #ccc;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle-track.on {
+      background: #1a1a1a;
+    }
+
+    .toggle-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: white;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: left 0.2s;
+    }
+
+    .toggle-track.on .toggle-thumb {
+      left: 18px;
+    }
+
     @media (max-width: 480px) {
       .infinitiv {
         font-size: 1.5rem;
@@ -333,6 +381,10 @@
     <button class="active" id="btn-flash" onclick="setMode('flash', this)">Flashcards</button>
     <button id="btn-all" onclick="setMode('all', this)">All Verbs</button>
     <button onclick="shuffle()">Shuffle</button>
+    <span class="toggle-wrap" id="toggle-trans" onclick="toggleTransOnly()">
+      <span class="toggle-track" id="toggle-track"><span class="toggle-thumb"></span></span>
+      Translation only
+    </span>
   </div>
 
   <div id="flash-mode">
@@ -458,6 +510,7 @@
     var current = 0;
     var revealed = false;
     var mode = 'flash';
+    var transOnly = false;
 
     function formatP2(p2) {
       return p2.split('/').map(function (s) {
@@ -467,17 +520,30 @@
       }).join('');
     }
 
+    function toggleTransOnly() {
+      transOnly = !transOnly;
+      var track = document.getElementById('toggle-track');
+      if (transOnly) {
+        track.classList.add('on');
+      } else {
+        track.classList.remove('on');
+      }
+      renderCard();
+    }
+
     function renderCard() {
       var v = verbs[order[current]];
       revealed = false;
       document.getElementById('card-hint').textContent = 'tap to reveal';
       document.getElementById('reveal-btn').textContent = 'Reveal';
+      document.getElementById('inf').style.display = transOnly ? 'none' : '';
       document.getElementById('inf').textContent = v.inf;
       document.getElementById('trans').textContent = v.en;
       document.getElementById('card-number').textContent = (current + 1) + ' / ' + verbs.length;
       document.getElementById('progress').textContent = (current + 1) + ' of ' + verbs.length;
       var forms = document.getElementById('forms');
       forms.innerHTML = '<table>' +
+        (transOnly ? '<tr><td>Infinitiv</td><td>' + v.inf + '</td></tr>' : '') +
         '<tr><td>Präteritum</td><td>' + v.prat + '</td></tr>' +
         '<tr><td>Partizip II</td><td>' + formatP2(v.p2) + '</td></tr>' +
         '</table>';
