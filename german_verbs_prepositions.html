@@ -402,6 +402,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="study.css">
 </head>
 
 <body>
@@ -416,14 +417,21 @@
     <button class="active" id="btn-flash" onclick="setMode('flash', this)">Flashcards</button>
     <button id="btn-all" onclick="setMode('all', this)">All Verbs</button>
     <button id="btn-rules" onclick="setMode('rules', this)">Rules</button>
+    <button id="btn-quiz" onclick="setMode('quiz', this)">Quiz</button>
+    <button id="btn-learn" onclick="setMode('learn', this)">★ To learn (<span class="learn-count">0</span>)</button>
     <button id="btn-shuffle" onclick="shuffle()">Shuffle</button>
   </div>
 
   <div id="flash-mode">
     <div class="progress" id="progress"></div>
+    <div class="deck-banner" id="deck-banner" style="display:none">
+      ★ Studying your To-learn list
+      <button class="link-btn" onclick="setDeck('all')">show all verbs</button>
+    </div>
     <div class="card-area">
       <div class="card" id="card" onclick="reveal()">
         <span class="card-number" id="card-number"></span>
+        <button class="star-btn card-star" id="card-star" onclick="event.stopPropagation(); toggleStarCurrent()">☆</button>
         <span class="card-hint" id="card-hint">tap to reveal</span>
         <div class="infinitiv" id="inf"></div>
         <div class="translation" id="trans"></div>
@@ -446,11 +454,15 @@
           <th>Case</th>
           <th>+Thing</th>
           <th>Example</th>
+          <th class="star-col" title="To-learn list">★</th>
         </tr>
       </thead>
       <tbody id="all-tbody"></tbody>
     </table>
   </div>
+
+  <div class="study-panel" id="quiz-mode" style="display:none"></div>
+  <div class="study-panel" id="learn-mode" style="display:none"></div>
 
   <div class="rules-container" id="rules-mode">
     <h3>✅ Akkusativ (always used with these prepositions)</h3>
@@ -504,6 +516,7 @@
     </div>
   </div>
 
+  <script src="study.js"></script>
   <script>
     var verbs = [
       { inf: "abhängen (von)", "case": "D", da: "davon", en: "to depend on", ex: "Es hängt vom Wetter ab.<br><span style='color:#888;font-size:0.85rem'>It depends on the weather.</span>" },
@@ -580,12 +593,51 @@
     ];
 
     var order = [];
-    for (var i = 0; i < verbs.length; i++) {
-      order.push(i);
-    }
+    var deck = 'all'; // 'all' or 'learn'
     var current = 0;
     var revealed = false;
     var mode = 'flash';
+
+    function buildOrder() {
+      order = [];
+      for (var i = 0; i < verbs.length; i++) {
+        if (deck === 'all' || study.has(verbs[i].inf)) order.push(i);
+      }
+      if (!order.length) { deck = 'all'; return buildOrder(); }
+      current = 0;
+      document.getElementById('deck-banner').style.display = deck === 'learn' ? '' : 'none';
+    }
+
+    function setDeck(d) {
+      deck = d;
+      buildOrder();
+      renderCard();
+    }
+
+    function updateCardStar() {
+      var btn = document.getElementById('card-star');
+      var on = study.has(verbs[order[current]].inf);
+      btn.textContent = on ? '★' : '☆';
+      btn.classList.toggle('on', on);
+      btn.title = on ? 'Remove from To-learn list' : 'Add to To-learn list';
+    }
+
+    function toggleStarCurrent() {
+      var id = verbs[order[current]].inf;
+      var added = study.toggle(id);
+      study.toast(added ? '★ ' + id + ' added to To-learn list' : id + ' removed from To-learn list');
+    }
+
+    // "sich freuen (auf)" -> base "sich freuen", prep "auf"
+    function splitVerb(v) {
+      var m = v.inf.match(/^(.*?)\s*\(([^)]*)\)\s*$/);
+      return m ? { base: m[1].trim(), prep: m[2].trim() } : { base: v.inf, prep: '' };
+    }
+    var allPreps = [];
+    verbs.forEach(function (v) {
+      var p = splitVerb(v).prep;
+      if (p && allPreps.indexOf(p) < 0) allPreps.push(p);
+    });
 
     function renderCard() {
       var v = verbs[order[current]];
@@ -594,8 +646,9 @@
       document.getElementById('reveal-btn').textContent = 'Reveal';
       document.getElementById('inf').textContent = v.inf;
       document.getElementById('trans').textContent = v.en;
-      document.getElementById('card-number').textContent = (current + 1) + ' / ' + verbs.length;
-      document.getElementById('progress').textContent = (current + 1) + ' of ' + verbs.length;
+      document.getElementById('card-number').textContent = (current + 1) + ' / ' + order.length;
+      document.getElementById('progress').textContent = (current + 1) + ' of ' + order.length;
+      updateCardStar();
       var forms = document.getElementById('forms');
 
       var caseString = v.case === 'A' ? 'Akkusativ' : 'Dativ';
@@ -610,7 +663,7 @@
         '</table>';
       forms.classList.remove('visible');
       document.getElementById('prev-btn').disabled = current === 0;
-      document.getElementById('next-btn').disabled = current === verbs.length - 1;
+      document.getElementById('next-btn').disabled = current === order.length - 1;
     }
 
     function reveal() {
@@ -625,7 +678,7 @@
     }
 
     function next() {
-      if (current < verbs.length - 1) { current++; renderCard(); }
+      if (current < order.length - 1) { current++; renderCard(); }
     }
     function prev() {
       if (current > 0) { current--; renderCard(); }
@@ -648,7 +701,7 @@
       for (var i = 0; i < buttons.length; i++) {
         buttons[i].classList.remove('active');
         if (buttons[i].id === 'btn-shuffle') {
-          buttons[i].style.display = (m === 'flash') ? 'inline-block' : 'none';
+          buttons[i].style.display = (m === 'flash') ? '' : 'none';
         }
       }
       if (btn) {
@@ -657,7 +710,11 @@
         if (m === 'flash') document.getElementById('btn-flash').classList.add('active');
         if (m === 'all') document.getElementById('btn-all').classList.add('active');
         if (m === 'rules') document.getElementById('btn-rules').classList.add('active');
+        if (m === 'quiz') document.getElementById('btn-quiz').classList.add('active');
+        if (m === 'learn') document.getElementById('btn-learn').classList.add('active');
       }
+      document.querySelector('.subtitle').style.visibility = m === 'flash' ? '' : 'hidden';
+      if (m === 'quiz' || m === 'learn') study.show(m); else study.hide();
 
       document.getElementById('flash-mode').style.display = m === 'flash' ? '' : 'none';
       var allMode = document.getElementById('all-mode');
@@ -693,6 +750,7 @@
           '<td>' + casePill + '</td>' +
           '<td>' + daPill + '</td>' +
           '<td style="font-style:italic">' + v.ex + '</td>' +
+          '<td class="star-col"><button class="star-btn' + (study.has(v.inf) ? ' on' : '') + '" onclick="study.toggle(verbs[' + i + '].inf)" title="To-learn list">' + (study.has(v.inf) ? '★' : '☆') + '</button></td>' +
           '</tr>';
       }
       tbody.innerHTML = html;
@@ -704,6 +762,66 @@
       if (e.key === 'ArrowLeft') prev();
     });
 
+    function casePill(v) {
+      return v.case === 'A' ? '<span class="pill pill-akk">Akkusativ</span>' : '<span class="pill pill-dat">Dativ</span>';
+    }
+
+    var study = createStudy({
+      key: 'prepositions',
+      verbs: verbs,
+      idOf: function (v) { return v.inf; },
+      title: function (v) { return v.inf; },
+      subtitle: function (v) { return v.en; },
+      detailRows: function (v) {
+        return [
+          ['Case', casePill(v)],
+          ['+ Something', '<span class="pill pill-da">' + v.da + '</span>'],
+          ['Example', '<span style="font-style:italic">' + v.ex + '</span>']
+        ];
+      },
+      types: [
+        {
+          id: 'prep', label: 'Preposition', on: true,
+          build: function (v) {
+            var sv = splitVerb(v);
+            // prepositions this same verb also takes (e.g. sprechen mit/über/von) are never offered as wrong answers
+            var taken = verbs.filter(function (o) { return splitVerb(o).base === sv.base; })
+              .map(function (o) { return splitVerb(o).prep; });
+            var pool = createStudy.shuffle(allPreps.filter(function (p) { return taken.indexOf(p) < 0; }));
+            return { ask: 'Which preposition?', prompt: sv.base + ' ___', sub: v.en, correct: sv.prep, distractors: pool.slice(0, 3) };
+          }
+        },
+        {
+          id: 'case', label: 'Case (Akk / Dat)', on: true,
+          build: function (v) {
+            var sv = splitVerb(v);
+            var right = v.case === 'A' ? 'Akkusativ' : 'Dativ';
+            return { ask: 'Which case?', prompt: sv.base + ' ' + sv.prep + ' + …', sub: v.en, correct: right,
+              distractors: [right === 'Akkusativ' ? 'Dativ' : 'Akkusativ'] };
+          }
+        },
+        {
+          id: 'meaning', label: 'English → German', on: false,
+          build: function (v) {
+            var sv = splitVerb(v);
+            var label = function (o) { var s = splitVerb(o); return s.base + ' ' + s.prep; };
+            var others = createStudy.shuffle(verbs.filter(function (o) { return o.en !== v.en && label(o) !== label(v); }));
+            return { ask: 'German for', prompt: v.en, sub: '', correct: label(v),
+              distractors: others.slice(0, 3).map(label) };
+          }
+        }
+      ],
+      quizEl: document.getElementById('quiz-mode'),
+      learnEl: document.getElementById('learn-mode'),
+      onChange: function () {
+        updateCardStar();
+        if (mode === 'all') renderAllTable();
+      },
+      onFlashcards: function () { deck = 'learn'; buildOrder(); renderCard(); setMode('flash'); },
+      onGoQuiz: function () { setMode('quiz'); }
+    });
+
+    buildOrder();
     renderCard();
   </script>
 </body>

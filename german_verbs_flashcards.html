@@ -366,6 +366,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="study.css">
 </head>
 
 <body>
@@ -380,7 +381,9 @@
   <div class="controls">
     <button class="active" id="btn-flash" onclick="setMode('flash', this)">Flashcards</button>
     <button id="btn-all" onclick="setMode('all', this)">All Verbs</button>
-    <button onclick="shuffle()">Shuffle</button>
+    <button id="btn-quiz" onclick="setMode('quiz', this)">Quiz</button>
+    <button id="btn-learn" onclick="setMode('learn', this)">★ To learn (<span class="learn-count">0</span>)</button>
+    <button id="btn-shuffle" onclick="shuffle()">Shuffle</button>
     <span class="toggle-wrap" id="toggle-trans" onclick="toggleTransOnly()">
       <span class="toggle-track" id="toggle-track"><span class="toggle-thumb"></span></span>
       Translation only
@@ -389,9 +392,14 @@
 
   <div id="flash-mode">
     <div class="progress" id="progress"></div>
+    <div class="deck-banner" id="deck-banner" style="display:none">
+      ★ Studying your To-learn list
+      <button class="link-btn" onclick="setDeck('all')">show all verbs</button>
+    </div>
     <div class="card-area">
       <div class="card" id="card" onclick="reveal()">
         <span class="card-number" id="card-number"></span>
+        <button class="star-btn card-star" id="card-star" onclick="event.stopPropagation(); toggleStarCurrent()">☆</button>
         <span class="card-hint" id="card-hint">tap to reveal</span>
         <div class="infinitiv" id="inf"></div>
         <div class="translation" id="trans"></div>
@@ -413,12 +421,17 @@
           <th>English</th>
           <th>Präteritum</th>
           <th>Partizip II</th>
+          <th class="star-col" title="To-learn list">★</th>
         </tr>
       </thead>
       <tbody id="all-tbody"></tbody>
     </table>
   </div>
 
+  <div class="study-panel" id="quiz-mode" style="display:none"></div>
+  <div class="study-panel" id="learn-mode" style="display:none"></div>
+
+  <script src="study.js"></script>
   <script>
     var verbs = [
       { inf: "backen", en: "to bake", prat: "backte / buk", p2: "hat gebacken" },
@@ -579,9 +592,7 @@
     ];
 
     var order = [];
-    for (var i = 0; i < verbs.length; i++) {
-      order.push(i);
-    }
+    var deck = 'all'; // 'all' or 'learn'
     var current = 0;
     var revealed = false;
     var mode = 'flash';
@@ -606,6 +617,36 @@
       renderCard();
     }
 
+    function buildOrder() {
+      order = [];
+      for (var i = 0; i < verbs.length; i++) {
+        if (deck === 'all' || study.has(verbs[i].inf)) order.push(i);
+      }
+      if (!order.length) { deck = 'all'; return buildOrder(); }
+      current = 0;
+      document.getElementById('deck-banner').style.display = deck === 'learn' ? '' : 'none';
+    }
+
+    function setDeck(d) {
+      deck = d;
+      buildOrder();
+      renderCard();
+    }
+
+    function updateCardStar() {
+      var btn = document.getElementById('card-star');
+      var on = study.has(verbs[order[current]].inf);
+      btn.textContent = on ? '★' : '☆';
+      btn.classList.toggle('on', on);
+      btn.title = on ? 'Remove from To-learn list' : 'Add to To-learn list';
+    }
+
+    function toggleStarCurrent() {
+      var id = verbs[order[current]].inf;
+      var added = study.toggle(id);
+      study.toast(added ? '★ ' + id + ' added to To-learn list' : id + ' removed from To-learn list');
+    }
+
     function renderCard() {
       var v = verbs[order[current]];
       revealed = false;
@@ -614,8 +655,9 @@
       document.getElementById('inf').style.display = transOnly ? 'none' : '';
       document.getElementById('inf').textContent = v.inf;
       document.getElementById('trans').textContent = v.en;
-      document.getElementById('card-number').textContent = (current + 1) + ' / ' + verbs.length;
-      document.getElementById('progress').textContent = (current + 1) + ' of ' + verbs.length;
+      document.getElementById('card-number').textContent = (current + 1) + ' / ' + order.length;
+      document.getElementById('progress').textContent = (current + 1) + ' of ' + order.length;
+      updateCardStar();
       var forms = document.getElementById('forms');
       forms.innerHTML = '<table>' +
         (transOnly ? '<tr><td>Infinitiv</td><td>' + v.inf + '</td></tr>' : '') +
@@ -624,7 +666,7 @@
         '</table>';
       forms.classList.remove('visible');
       document.getElementById('prev-btn').disabled = current === 0;
-      document.getElementById('next-btn').disabled = current === verbs.length - 1;
+      document.getElementById('next-btn').disabled = current === order.length - 1;
     }
 
     function reveal() {
@@ -639,7 +681,7 @@
     }
 
     function next() {
-      if (current < verbs.length - 1) { current++; renderCard(); }
+      if (current < order.length - 1) { current++; renderCard(); }
     }
     function prev() {
       if (current > 0) { current--; renderCard(); }
@@ -667,8 +709,14 @@
       } else {
         if (m === 'flash') document.getElementById('btn-flash').classList.add('active');
         if (m === 'all') document.getElementById('btn-all').classList.add('active');
+        if (m === 'quiz') document.getElementById('btn-quiz').classList.add('active');
+        if (m === 'learn') document.getElementById('btn-learn').classList.add('active');
       }
+      document.getElementById('btn-shuffle').style.display = m === 'flash' ? '' : 'none';
+      document.getElementById('toggle-trans').style.display = m === 'flash' ? '' : 'none';
       document.getElementById('flash-mode').style.display = m === 'flash' ? '' : 'none';
+      document.querySelector('.subtitle').style.visibility = m === 'flash' ? '' : 'hidden';
+      if (m === 'quiz' || m === 'learn') study.show(m); else study.hide();
       var allMode = document.getElementById('all-mode');
       if (m === 'all') {
         allMode.classList.add('visible');
@@ -688,6 +736,7 @@
           '<td class="en">' + v.en + '</td>' +
           '<td>' + v.prat + '</td>' +
           '<td>' + formatP2(v.p2) + '</td>' +
+          '<td class="star-col"><button class="star-btn' + (study.has(v.inf) ? ' on' : '') + '" onclick="study.toggle(verbs[' + i + '].inf)" title="To-learn list">' + (study.has(v.inf) ? '★' : '☆') + '</button></td>' +
           '</tr>';
       }
       tbody.innerHTML = html;
@@ -699,6 +748,52 @@
       if (e.key === 'ArrowLeft') prev();
     });
 
+    var study = createStudy({
+      key: 'irregular',
+      verbs: verbs,
+      idOf: function (v) { return v.inf; },
+      title: function (v) { return v.inf; },
+      subtitle: function (v) { return v.en; },
+      detailRows: function (v) {
+        return [['Präteritum', '<b>' + v.prat + '</b>'], ['Partizip II', formatP2(v.p2)]];
+      },
+      types: [
+        {
+          id: 'prat', label: 'Präteritum', on: true,
+          build: function (v) {
+            var others = verbs.filter(function (o) { return o !== v; }).map(function (o) { return o.prat; });
+            return { ask: 'Präteritum of', prompt: v.inf, sub: v.en, correct: v.prat,
+              distractors: createStudy.formDistractors(v.inf, v.prat, 'prat', others) };
+          }
+        },
+        {
+          id: 'p2', label: 'Partizip II', on: true,
+          build: function (v) {
+            var others = verbs.filter(function (o) { return o !== v; }).map(function (o) { return o.p2; });
+            return { ask: 'Partizip II of', prompt: v.inf, sub: v.en, correct: v.p2,
+              distractors: createStudy.formDistractors(v.inf, v.p2, 'p2', others) };
+          }
+        },
+        {
+          id: 'meaning', label: 'English → German', on: false,
+          build: function (v) {
+            var others = createStudy.shuffle(verbs.filter(function (o) { return o.en !== v.en && o.inf !== v.inf; }));
+            return { ask: 'German verb for', prompt: v.en, sub: '', correct: v.inf,
+              distractors: others.slice(0, 3).map(function (o) { return o.inf; }) };
+          }
+        }
+      ],
+      quizEl: document.getElementById('quiz-mode'),
+      learnEl: document.getElementById('learn-mode'),
+      onChange: function () {
+        updateCardStar();
+        if (mode === 'all') renderAllTable();
+      },
+      onFlashcards: function () { deck = 'learn'; buildOrder(); renderCard(); setMode('flash'); },
+      onGoQuiz: function () { setMode('quiz'); }
+    });
+
+    buildOrder();
     renderCard();
   </script>
 </body>
